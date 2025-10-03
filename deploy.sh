@@ -6,8 +6,8 @@ deploy () {
 	then
 		rm -r ota
 	fi
-	./build/prepare-fake-ota.sh out/device.tar.xz ota
-	./build/system-image-from-ota.sh ota/ubuntu_command out
+	./build/prepare-fake-ota.sh out/device_Z01R.tar.xz build_dir/ota
+	./build/system-image-from-ota.sh build_dir/ota/ubuntu_command out
 	rm deviceinfo
 }
 

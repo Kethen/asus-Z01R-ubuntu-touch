@@ -51,5 +51,5 @@ do
 done
 ln -sf python2.7 /usr/bin/python
 bash ./build.sh -b build_dir
-#bash ./deploy.sh
+bash ./deploy.sh
 "
