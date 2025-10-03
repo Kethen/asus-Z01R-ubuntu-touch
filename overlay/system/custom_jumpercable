@@ -217,7 +217,7 @@ mount_Z01R() {
 }
 
 initial_porting_script() {
-	echo "$(date) jumpcable loaded" > /userdata/initial_boot.log
+	echo "$(date) custom_jumpercable loaded" > /userdata/initial_boot.log
 	sync
 	lxc-checkconfig >> /userdata/initial_boot.log
 }
