@@ -23,4 +23,4 @@ deviceinfo_rootfs_image_sector_size="4096"
 # boot loader provides root=PARTUUID init=/init skip_initramfs when booting into system, we likely will be flashing recovery as boot
 deviceinfo_has_recovery_partition="true"
 deviceinfo_recovery_partition_size="67108864"
-deviceinfo_system_partition_size="2899102924"
+deviceinfo_system_partition_size="2986344448"

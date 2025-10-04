@@ -38,6 +38,7 @@ sudo podman run \
 	ut_builder \
 	/bin/bash -c \
 "
+set -xe
 export ROOTFS_URL=\"https://ci.ubports.com/job/ubuntu-touch-rootfs/job/ubports%252Ffocal/lastSuccessfulBuild/artifact/ubuntu-touch-android9plus-rootfs-arm64.tar.gz\"
 export OTA_CHANNEL=\"20.04/arm64/android9plus/devel\"
 export DEV_TARBALL_VARIANT=_usrmerge

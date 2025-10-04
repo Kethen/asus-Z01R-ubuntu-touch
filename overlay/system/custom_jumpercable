@@ -218,8 +218,74 @@ mount_Z01R() {
 
 initial_porting_script() {
 	echo "$(date) custom_jumpercable loaded" > /userdata/initial_boot.log
-	sync
+	echo "-- lxc-checkconfig --" >> /userdata/initial_boot.log
 	lxc-checkconfig >> /userdata/initial_boot.log
+	echo >> /userdata/initial_boot.log
+	echo "-- mount --" >> /userdata/initial_boot.log
+	mount >> /userdata/initial_boot.log
+	sync
+}
+
+protected_mount() {
+	part_name="$1"
+	part_blk="$2"
+	mount_point="$3"
+
+	new_mount_point=/userdata/protected_rw_parts/$1
+
+	if ! [ -e "$new_mount_point" ]
+	then
+		mkdir -p "${new_mount_point}_ref"
+		mount "$part_blk" "${new_mount_point}_ref"
+		cp -a "${new_mount_point}_ref" "$new_mount_point"
+		umount "${new_mount_point}_ref"
+	fi
+
+	mount -o bind "$new_mount_point" "$mount_point"
+}
+
+mount_android() {
+	mount -o remount,rw /
+
+	# this actually fails, /var/lib/lxc/android/android-rootfs.img is perfectly sized
+	mount /var/lib/lxc/android/android-rootfs.img /android
+	mkdir -p /android/APD
+	mkdir -p /android/asdf
+	umount /android
+	mount -o remount,ro /
+	mount -o ro /var/lib/lxc/android/android-rootfs.img android
+
+	# vendor partition image, so that we don't have to worry about the currently installed vendor
+	mount -o ro /vendor.img /android/vendor
+
+	# /android/mnt
+	mount -t tmpfs tmpfs /android/mnt
+
+	# ro mounts, no rm -rf protection needed
+	mount -o ro /dev/sde4 /android/vendor/firmware_mnt
+	mount -o ro /dev/sde9 /android/vendor/dsp
+	mount -o ro /dev/sde5 /android/vendor/bt_firmware
+
+	# rw mounts, add rm -rf protection
+	protected_mount factory /dev/sdf7 /android/vendor/factory
+	mkdir /android/mnt/vendor/persist
+	protected_mount persist /dev/sda9 /android/mnt/vendor/persist
+	protected_mount ADF /dev/sda8 /android/vendor/ADF
+	protected_mount APD /dev/sda10 /android/APD
+	protected_mount asdf /dev/sda5 /android/asdf
+
+	# mask fstab so that it will not be attempted later
+	mount -o bind /dev/null /android/vendor/etc/fstab.qcom
+}
+
+charger_mode() {
+	# TODO
+	echo "TODO: charger mode"
+}
+
+prep_hardware() {
+	# wifi
+	echo "ON" > /dev/wlan
 }
 
 # Make sure to set up everything only on first-stage boot.
@@ -245,6 +311,9 @@ if [ ! -e /proc/self/exe ]; then
 
 	#mount_userdata
 	mount_Z01R
+	#mount_android
+	charger_mode
+	prep_hardware
 	initial_porting_script
 	process_bind_mounts
 fi
