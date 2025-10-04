@@ -286,6 +286,9 @@ charger_mode() {
 prep_hardware() {
 	# wifi
 	echo "ON" > /dev/wlan
+
+	# torch
+	chown 32011:32011 '/sys/class/leds/led:torch_0/brightness' '/sys/class/leds/led:switch_0/brightness'
 }
 
 # Make sure to set up everything only on first-stage boot.
