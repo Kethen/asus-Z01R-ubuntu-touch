@@ -6,8 +6,9 @@ Ubuntu touch port for Z01R, based on the hardwork of the developers of https://w
 
 - investigate video recording crash
 - find a good way to include and ship vendor partition
+- get lpm mode working
+- notch configuration
 - test gps
-- test light sensor
 - test fingerprint sensor (my phone does not have a fingerprint sensor and that brings down the hal, can't test)
 - test calling & SMS (I only have callable esims)
 - cleanup gitlab ci
