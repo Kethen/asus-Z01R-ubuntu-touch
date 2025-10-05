@@ -244,15 +244,26 @@ protected_mount() {
 	mount -o bind "$new_mount_point" "$mount_point"
 }
 
-mount_android() {
+add_android_root_dirs() {
 	mount -o remount,rw /
 
 	# this actually fails, /var/lib/lxc/android/android-rootfs.img is perfectly sized
 	mount /var/lib/lxc/android/android-rootfs.img /android
-	mkdir -p /android/APD
-	mkdir -p /android/asdf
+	if ! [ -e /android/APD ]
+	then
+		umount /android
+		dd if=/dev/zero bs=10M count=1 >> /var/lib/lxc/android/android-rootfs.img
+		e2fsck -f /var/lib/lxc/android/android-rootfs.img
+		resize2fs /var/lib/lxc/android/android-rootfs.img
+		mount /var/lib/lxc/android/android-rootfs.img /android
+		mkdir -p /android/APD
+		mkdir -p /android/asdf
+	fi
 	umount /android
 	mount -o remount,ro /
+}
+
+mount_android() {
 	mount -o ro /var/lib/lxc/android/android-rootfs.img android
 
 	# vendor partition image, so that we don't have to worry about the currently installed vendor
@@ -314,6 +325,7 @@ if [ ! -e /proc/self/exe ]; then
 
 	#mount_userdata
 	mount_Z01R
+	add_android_root_dirs
 	#mount_android
 	charger_mode
 	prep_hardware
